@@ -9,11 +9,13 @@
 #include <ctime>
 #include <cstdlib>
 
+#include "consts.h"
 
-int main(){
-    
-    bool working = false;
-    
+struct proc_a_settings{
+    int workState;
+};
+
+int main(){    
     srand(time(NULL));
     cpu_set_t set;
     CPU_ZERO(&set);
@@ -22,6 +24,10 @@ int main(){
     std::cout << "proc_a: Starting..." << std::endl;
     std::ofstream outfile ("a_out.txt");
     outfile << "proc_a here, kisses!" << std::endl;
+
+    // SETTING UP PROCESS SETTINGS (HEHE)
+    struct proc_a_settings settings;
+    settings.workState = PAUSED_M;
 
     // OPENING D->A QUEUE
     int flagsDA = O_RDONLY | O_CREAT;
@@ -51,15 +57,15 @@ int main(){
         if (attrDA.mq_curmsgs > 0){
             int bufDA = 0;
             mq_receive(dtoa_mq_dec, (char*) &bufDA, sizeof(int), 0);
-            if (bufDA == 1) {
-                working = true;
+            if (bufDA == WORKING_M) {
+                settings.workState = WORKING_M;
                 outfile << "proc_a: I'm starting my job!" << std::endl;
-            } else if (bufDA == -1) {
-                working = false;
+            } else if (bufDA == PAUSED_M) {
+                settings.workState = PAUSED_M;
                 outfile << "proc_a: I'm quiting my job!" << std::endl;
             }
         } 
-        if (working) {
+        if (settings.workState == WORKING_M) {
             mq_getattr (atob_mq_dec, &attrAB);
             if (attrAB.mq_curmsgs < 100){
                 int i = rand() % 100;

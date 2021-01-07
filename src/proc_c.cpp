@@ -3,10 +3,22 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 
+#include "consts.h"
+
+struct proc_c_settings{
+    int workState;
+    int delayValue;
+};
+
 int main(){
     std::cout << "proc_c: Starting..." << std::endl;
     std::ofstream outfile ("c_out.txt");
     outfile << "proc_c here, kisses!" << std::endl;
+
+    // SETTING UP PROCESS SETTINGS (HEHE)
+    struct proc_c_settings settings;
+    settings.workState = WORKING_M;
+    settings.delayValue = DELTA_DELAY_VALUE_M & 0;
 
     // OPENING D->C QUEUE
     int flagsDC = O_RDONLY | O_CREAT;

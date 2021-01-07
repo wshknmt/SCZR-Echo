@@ -5,6 +5,24 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 
+#include "consts.h"
+
+struct proc_d_settings{
+    int workState;
+    int deltaVal;
+    int delayVal;
+    int l1Val;
+    int l2Val;
+    int l3Val;
+    int l4Val;
+    int l5Val;
+    int l6Val;
+    int l7Val;
+    int l8Val;
+    int l9Val;
+    int l10Val;
+};
+
 int startProc(const char *proc_name, char **proc_args){
     pid_t pid = fork();
     if (pid != 0){
@@ -22,6 +40,22 @@ int main(){
 
     int flags = O_WRONLY | O_CREAT;
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+    // SETTING UP PROCESS SETTINGS (HEHE)
+    struct proc_d_settings settings;
+    settings.workState = PAUSED_M;
+    settings.deltaVal = DELTA_DELAY_VALUE_M & 0;
+    settings.delayVal = DELTA_DELAY_VALUE_M & 0;
+    settings.l1Val = LAYER_1_M & 100;
+    settings.l2Val = LAYER_2_M & 0;
+    settings.l3Val = LAYER_3_M & 0;
+    settings.l4Val = LAYER_4_M & 0;
+    settings.l5Val = LAYER_5_M & 0;
+    settings.l6Val = LAYER_6_M & 0;
+    settings.l7Val = LAYER_7_M & 0;
+    settings.l8Val = LAYER_8_M & 0;
+    settings.l9Val = LAYER_9_M & 0;
+    settings.l10Val = LAYER_10_M & 0;
 
     // OPENING D->A QUEUE
     struct mq_attr attrDA;
@@ -52,15 +86,14 @@ int main(){
     pid_t proc_b_pid = startProc("bin/proc_b", NULL);
     pid_t proc_c_pid = startProc("bin/proc_c", NULL);
 
-    int command = 0;
     while (true){
         char c = getc(stdin);
         if (c == 's') {
-            command = 1;
-            mq_send(dtoa_mq_dec, (const char*) &command, sizeof(int), 0);
+            settings.workState = WORKING_M;
+            mq_send(dtoa_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
         } else if (c == 'p') {
-            command = -1;
-            mq_send(dtoa_mq_dec, (const char*) &command, sizeof(int), 0);
+            settings.workState = PAUSED_M;
+            mq_send(dtoa_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
         } else if (c == 'x'){
             break;
         }

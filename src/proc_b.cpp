@@ -5,6 +5,23 @@
 #include <mqueue.h>
 #include <unistd.h>
 
+#include "consts.h"
+
+struct proc_b_settings{
+    int workState;
+    int deltaVal;
+    int l1Val;
+    int l2Val;
+    int l3Val;
+    int l4Val;
+    int l5Val;
+    int l6Val;
+    int l7Val;
+    int l8Val;
+    int l9Val;
+    int l10Val;
+};
+
 int main(){
     cpu_set_t set;
     CPU_ZERO(&set);
@@ -13,6 +30,21 @@ int main(){
     std::cout << "proc_b: Starting..." << std::endl;
     std::ofstream outfile ("b_out.txt");
     outfile << "proc_b here, kisses!" << std::endl;
+
+    // SETTING UP PROCESS SETTINGS (HEHE)
+    struct proc_b_settings settings;
+    settings.workState = WORKING_M;
+    settings.deltaVal = DELTA_DELAY_VALUE_M & 0;
+    settings.l1Val = LAYER_1_M & 100;
+    settings.l2Val = LAYER_2_M & 0;
+    settings.l3Val = LAYER_3_M & 0;
+    settings.l4Val = LAYER_4_M & 0;
+    settings.l5Val = LAYER_5_M & 0;
+    settings.l6Val = LAYER_6_M & 0;
+    settings.l7Val = LAYER_7_M & 0;
+    settings.l8Val = LAYER_8_M & 0;
+    settings.l9Val = LAYER_9_M & 0;
+    settings.l10Val = LAYER_10_M & 0;
 
     // OPENING D->B QUEUE
     int flagsDB = O_RDONLY | O_CREAT;
