@@ -19,7 +19,7 @@ $(TARGETDIR)/proc_b: $(OBJECTS) dirs
 	g++ $(CFLAGS) $(BUILDDIR)/proc_b.o -o $(TARGETDIR)/proc_b -lrt
 
 $(TARGETDIR)/proc_a: $(OBJECTS) dirs
-	g++ $(CFLAGS) $(BUILDDIR)/proc_a.o -o $(TARGETDIR)/proc_a -lrt
+	g++ $(CFLAGS) $(BUILDDIR)/proc_a.o -o $(TARGETDIR)/proc_a -lrt -lsfml-audio -pthread
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) dirs
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<

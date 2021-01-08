@@ -8,12 +8,18 @@
 #include <sys/stat.h>
 #include <ctime>
 #include <cstdlib>
+#include <SFML/Audio.hpp>
+#include <vector>
+#include <thread>
 
 #include "consts.h"
 
 struct proc_a_settings{
     int workState;
 };
+
+void startRecording();
+void sendSound(const sf::SoundBuffer & buffer);
 
 int main(){    
     srand(time(NULL));
@@ -87,3 +93,31 @@ int main(){
 
     return 0;
 }
+
+void startRecording() {
+    if (!sf::SoundBufferRecorder::isAvailable()) {
+        std::cerr << "Error. Microphone is unavailable." << std::endl;
+        exit(EXIT_FAILURE);
+    }	
+    else
+        std::cout << "Microphone is available. Recording started." << std::endl;
+
+    sf::SoundBufferRecorder recorder;
+    sf::SoundBuffer tmpBuffer;
+    recorder.start();
+    while (true) {
+        sleep(0.05);
+        recorder.stop();
+        tmpBuffer = recorder.getBuffer();
+        recorder.start();
+        std::thread sender(sendSound, tmpBuffer);
+        sender.detach();
+    }
+}
+
+void sendSound(const sf::SoundBuffer & buffer) {
+    const sf::Int16 * samples = buffer.getSamples();
+    for (unsigned int i = 0; i < buffer.getSampleCount(); ++i) {
+        // add sample to message queue here please
+    }
+};
