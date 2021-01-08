@@ -13,10 +13,10 @@ $(TARGETDIR)/proc_d: $(OBJECTS) dirs $(TARGETDIR)/proc_c $(TARGETDIR)/proc_b $(T
 	g++ $(CFLAGS) $(BUILDDIR)/proc_d.o -o $(TARGETDIR)/proc_d -lrt
 
 $(TARGETDIR)/proc_c: $(OBJECTS) dirs
-	g++ $(CFLAGS) $(BUILDDIR)/proc_c.o -o $(TARGETDIR)/proc_c -lrt
+	g++ $(CFLAGS) $(BUILDDIR)/proc_c.o -o $(TARGETDIR)/proc_c -lrt -lsfml-audio
 
 $(TARGETDIR)/proc_b: $(OBJECTS) dirs
-	g++ $(CFLAGS) $(BUILDDIR)/proc_b.o -o $(TARGETDIR)/proc_b -lrt
+	g++ $(CFLAGS) $(BUILDDIR)/proc_b.o -o $(TARGETDIR)/proc_b -lrt -lsfml-audio
 
 $(TARGETDIR)/proc_a: $(OBJECTS) dirs
 	g++ $(CFLAGS) $(BUILDDIR)/proc_a.o -o $(TARGETDIR)/proc_a -lrt -lsfml-audio -pthread

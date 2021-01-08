@@ -107,5 +107,12 @@ int main(){
     mq_close(dtob_mq_dec);
     mq_close(dtoc_mq_dec);
 
+    sleep(0.5);
+    mq_unlink("/dtoa_mq");
+    mq_unlink("/dtob_mq");
+    mq_unlink("/dtoc_mq");
+    mq_unlink("/atob_mq");
+    mq_unlink("/btoc_mq");
+
     return 0;
 }

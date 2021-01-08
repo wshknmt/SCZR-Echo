@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 #include <unistd.h>
+#include <SFML/Audio.hpp>
 
 #include "consts.h"
 
@@ -60,8 +61,8 @@ int main(){
     mode_t modeAB = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
     struct mq_attr attrAB;
     attrAB.mq_flags = flagsAB;
-    attrAB.mq_maxmsg = 100;
-    attrAB.mq_msgsize = sizeof(int);
+    attrAB.mq_maxmsg = SOUND_MQ_MAX;
+    attrAB.mq_msgsize = sizeof(short);
     mqd_t atob_mq_dec = mq_open ("/atob_mq", flagsAB,  modeAB, &attrAB);
 
     // OPENING B->C QUEUE
@@ -69,8 +70,8 @@ int main(){
     mode_t modeBC = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
     struct mq_attr attrBC;
     attrBC.mq_flags = flagsBC;       
-    attrBC.mq_maxmsg = 100;      
-    attrBC.mq_msgsize = sizeof(int);
+    attrBC.mq_maxmsg = SOUND_MQ_MAX;      
+    attrBC.mq_msgsize = sizeof(short);
     attrBC.mq_curmsgs = 0;
     mqd_t btoc_mq_dec = mq_open("/btoc_mq", flagsBC, modeBC, &attrBC);
 
@@ -78,14 +79,13 @@ int main(){
 
     mq_getattr (atob_mq_dec, &attrAB);
     outfile << "proc_b: " << attrAB.mq_curmsgs << " atributes in queueueue as for the beginning of my work." << std::endl;
-    int i = 0;
+    sf::Int16 i = 0;
     while (true){
         mq_getattr(atob_mq_dec, &attrAB);
         if (attrAB.mq_curmsgs > 0){
-            mq_receive(atob_mq_dec, (char*) &i, sizeof(int), 0);
+            mq_receive(atob_mq_dec, (char*) &i, sizeof(short), 0);
             outfile << "proc_b: Received " << i << ". " << attrAB.mq_curmsgs << " atributes left in queueueue." << std::endl;
-            ++i;
-            mq_send(btoc_mq_dec, (const char*) &i, sizeof(int), 0);
+            mq_send(btoc_mq_dec, (const char*) &i, sizeof(short), 0);
         }
     }
     outfile << "proc_b: " << attrAB.mq_curmsgs << " atributes in queueueue, my job is done here, bye!." << std::endl;
