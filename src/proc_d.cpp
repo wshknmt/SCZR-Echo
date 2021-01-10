@@ -91,9 +91,11 @@ int main(){
         if (c == 's') {
             settings.workState = WORKING_M;
             mq_send(dtoa_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
+            mq_send(dtoc_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
         } else if (c == 'p') {
             settings.workState = PAUSED_M;
             mq_send(dtoa_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
+            mq_send(dtoc_mq_dec, (const char*) &(settings.workState), sizeof(int), 0);
         } else if (c == 'x'){
             break;
         }

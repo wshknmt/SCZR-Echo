@@ -2,6 +2,7 @@
 #include <fstream> 
 #include <sys/stat.h>
 #include <mqueue.h>
+#include <vector>
 #include <SFML/Audio.hpp>
 #include <unistd.h>
 
@@ -11,6 +12,8 @@ struct proc_c_settings{
     int workState;
     int delayValue;
 };
+
+std::vector<sf::Int16> samplesVector;
 
 int main(){
     std::cout << "proc_c: Starting..." << std::endl;
@@ -45,6 +48,9 @@ int main(){
     mq_getattr (btoc_mq_dec, &attrBC);
     outfile << "proc_c: " << attrBC.mq_curmsgs << " atributes in queueueue as for the beginning of my work." << std::endl;
     int i = 0;
+    unsigned long long counter;
+    sf::SoundBuffer soundBuffer;
+    sf::Sound sound;
     while (true){
         mq_getattr (dtoc_mq_dec, &attrDC);
         if (attrDC.mq_curmsgs > 0){
@@ -59,17 +65,19 @@ int main(){
             }
         } 
         if (settings.workState == WORKING_M) {
-            // DALEM TU KOD Z NAGRYWANIA, ROBCIE Z TYM CO CHCECIE
-            sf::SoundBufferRecorder recorder;
-            sf::SoundBuffer tmpBuffer;
-            recorder.start();
-            while (settings.workState == WORKING_M) {
-                sleep(0.05);
-                recorder.stop();
-                tmpBuffer = recorder.getBuffer();
-                recorder.start();
-                //std::thread sender(sendSound, tmpBuffer, atob_mq_dec, std::ref(outfile));
-                //sender.detach();
+            mq_getattr (btoc_mq_dec, &attrBC);
+            if (attrBC.mq_curmsgs > 0){
+                sf::Int16 i = 0;
+                mq_receive(btoc_mq_dec, (char*) &i, sizeof(short), 0);
+                samplesVector.push_back(i);
+                outfile << "proc_c: Received " << i << ". " << attrBC.mq_curmsgs << " atributes left in queueueue." << std::endl;
+            }
+            if (samplesVector.size() - counter >= 44100){
+                soundBuffer.loadFromSamples(&samplesVector[counter], 44100, 1, 44100);
+                counter += 44100;
+                sound.setBuffer(soundBuffer);
+                sound.play();
+                sleep(1);
             }
         } 
         // A TUTAJ JEST KOD CO ODBIERA PROBKE OD B I JA WPISUJE DO PLIKU, SIE MOZE PRZYDAC
